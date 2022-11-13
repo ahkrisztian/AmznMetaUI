@@ -9,7 +9,7 @@ namespace AmazonMetaUI.HTML
 {
     public static class GetLinkParts
     {
-        public static async Task<PageLinkModel> NewPageLinkModel(string url)
+        public static async Task<PageLinkModel> NewPageLinkModel(string url, int numberOfComments)
         {
             List<string> darabolt2 = new List<string>();
 
@@ -19,35 +19,54 @@ namespace AmazonMetaUI.HTML
 
             string reviewlinkfoot = GetLinksFunctions.linkfoot(divs, "see-all-reviews-link-foot");
 
-
-            //Get a reviews page
+            //Get a reviews page*
             string nexturl = GetLinksFunctions.link(reviewlinkfoot);
 
-
-            //Next page buttom link
-
-            string divAsync = await GetHtml.getHtml(nexturl);
-
-            string[] div = divAsync.Split(' ');
-
-            string[] nexturlarray = GetLinksFunctions.nextpageurl(div);
-
-            //Split next page link
-            string[] darabolt = nexturlarray[1].Split('/');
-
-            //Next page link pieces
-
-            foreach (var v in darabolt)
+            if (numberOfComments <= 10)
             {
-                if (!String.IsNullOrEmpty(v))
+                //Split next page link
+                string[] onePageReview = nexturl.Split('/');
+
+                //Next page link pieces
+
+                foreach (var v in onePageReview)
                 {
-                    darabolt2.Add(v);
+                    if (!String.IsNullOrEmpty(v))
+                    {
+                        darabolt2.Add(v);
+                    }
                 }
+
+                return new PageLinkModel { LinkFirst = darabolt2[2], LinkSecond = darabolt2[3], LinkThird = darabolt2[4], PageNumber = 1 };
+
             }
+            else
+            {
+                //Next page buttom link
 
-            darabolt2.ToArray();
+                string divAsync = await GetHtml.getHtml(nexturl);
 
-            return new PageLinkModel { LinkFirst = darabolt2[0], LinkSecond = darabolt2[1], LinkThird = darabolt2[2] };
+                string[] div = divAsync.Split(' ');
+
+                string[] nexturlarray = GetLinksFunctions.nextpageurl(div);
+
+                //Split next page link
+                string[] darabolt = nexturlarray[1].Split('/');
+
+                //Next page link pieces
+
+                foreach (var v in darabolt)
+                {
+                    if (!String.IsNullOrEmpty(v))
+                    {
+                        darabolt2.Add(v);
+                    }
+                }
+
+                darabolt2.ToArray();
+
+                return new PageLinkModel { LinkFirst = darabolt2[0], LinkSecond = darabolt2[1], LinkThird = darabolt2[2] };
+            }
 
         }
     }

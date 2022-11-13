@@ -22,7 +22,8 @@ namespace AmazonMetaUI.HTML
 
             for (int i = 1; i < htmll.Length; i++)
             {
-                string[] x = htmll[i].Split(new[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
+                
+                string[] x = htmll[i].Replace("<br />", "").Split(new[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
 
                 ReviewModel model = new ReviewModel();
 

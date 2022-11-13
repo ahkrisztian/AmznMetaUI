@@ -127,10 +127,10 @@ namespace AmazonMetaUI
 
             await Task.Run(async () =>
             {
-                var pagemodels = await GetLinkParts.NewPageLinkModel(url);
+                var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfComments);
 
                 models = GetTheUrls.urls(url, progress, CountedNumbersOfComments, pagemodels);
-                
+
             });
 
             List<CommentModel> ToCalculate = new List<CommentModel>();
