@@ -13,7 +13,8 @@ namespace AmazonMetaUI.HTML
 
         public static async Task<List<ReviewModel>> asynchtml(List<IPageLinkModel> htmls, IProgress<string> progress)
         {
-            //
+            //Returns ReviewModels
+
             List<ReviewModel> websites = new List<ReviewModel>();
 
             List<Task<List<ReviewModel>>> tasks = new List<Task<List<ReviewModel>>>();

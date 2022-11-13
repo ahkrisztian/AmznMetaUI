@@ -93,7 +93,7 @@ namespace AmazonMetaUI
             }
         }
 
-        public int CountedNumbersOfComments { get; set; }
+        public int CountedNumbersOfReviews { get; set; }
         public MainWindow()
         {
             DataContext = this;
@@ -118,18 +118,18 @@ namespace AmazonMetaUI
 
             await Task.Run(async () =>
             {
-                CountedNumbersOfComments = await NumberOfComments.GetNumberOfComments(url, progress);
+                CountedNumbersOfReviews = await NumberOfComments.GetNumberOfComments(url, progress);
 
-                CommentNumber3 = $"Number of Comments:{Environment.NewLine} {CountedNumbersOfComments}";
+                CommentNumber3 = $"Number of Reviwes:{Environment.NewLine} {CountedNumbersOfReviews}";
             });
 
             List<IPageLinkModel> models = new List<IPageLinkModel>();
 
             await Task.Run(async () =>
             {
-                var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfComments);
+                var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfReviews);
 
-                models = GetTheUrls.urls(url, progress, CountedNumbersOfComments, pagemodels);
+                models = GetTheUrls.urls(url, progress, CountedNumbersOfReviews, pagemodels);
 
             });
 
@@ -140,7 +140,9 @@ namespace AmazonMetaUI
             await Task.Run(async () =>
             {
                 List<ReviewModel> CommentsAndTitles = await Htmls.asynchtml(models, progress);
-               
+
+                CommentNumber3 = $"Number of Comments:{CommentsAndTitles.Count} {Environment.NewLine} Number of Comments: {CountedNumbersOfComments}";
+
                 ToCalculate = newlink.AddLinkModel(CommentsAndTitles);
 
                 Text = newlink.ToString();
