@@ -103,8 +103,16 @@ namespace AmazonMetaUI
 
         private async void Search_Click(object sender, RoutedEventArgs e)
         {
-            await Comments(_textBox.Text);
-            _textBox.Text = "";
+            try
+            {
+                await Comments(_textBox.Text);
+                _textBox.Text = "";
+            }
+            catch (Exception ex)
+            {
+
+                Label = $"Error inavlid URL";
+            }
 
         }
 
@@ -118,9 +126,17 @@ namespace AmazonMetaUI
 
             await Task.Run(async () =>
             {
-                CountedNumbersOfReviews = await NumberOfComments.GetNumberOfComments(url, progress);
+                try
+                {
+                    CountedNumbersOfReviews = await NumberOfComments.GetNumberOfComments(url, progress);
 
-                CommentNumber3 = $"Number of Reviwes:{Environment.NewLine} {CountedNumbersOfReviews}";
+                    CommentNumber3 = $"Number of Reviwes:{Environment.NewLine} {CountedNumbersOfReviews}";
+                }
+                catch (Exception)
+                {
+
+                    Label = $"Error inavlid URL";
+                }
             });
 
             List<IPageLinkModel> models = new List<IPageLinkModel>();
@@ -128,6 +144,11 @@ namespace AmazonMetaUI
             await Task.Run(async () =>
             {
                 var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfReviews);
+
+                if(pagemodels == null)
+                {
+                    Label = "No page link models";
+                }
 
                 models = GetTheUrls.urls(url, progress, CountedNumbersOfReviews, pagemodels);
 
@@ -139,9 +160,14 @@ namespace AmazonMetaUI
 
             await Task.Run(async () =>
             {
+                if(models == null)
+                {
+                    Label = "No comments found";
+                }
+
                 List<ReviewModel> CommentsAndTitles = await Htmls.asynchtml(models, progress);
 
-                CommentNumber3 = $"Number of Comments:{CommentsAndTitles.Count} {Environment.NewLine} Number of Comments: {CountedNumbersOfComments}";
+                CommentNumber3 = $"Number of Comments: {CommentsAndTitles.Count} {Environment.NewLine} Number of Comments: {CountedNumbersOfReviews}";
 
                 ToCalculate = newlink.AddLinkModel(CommentsAndTitles);
 
@@ -149,19 +175,22 @@ namespace AmazonMetaUI
             });
 
 
-            CommentNumber2 =  new CalculateCommentLength(ToCalculate).ToString();
+            if(ToCalculate.Count > 0)
+            {
+                CommentNumber2 = new CalculateCommentLength(ToCalculate).ToString();
 
-            CommentNumber4 = new CalculateTitleLength(ToCalculate).ToString();
+                CommentNumber4 = new CalculateTitleLength(ToCalculate).ToString();
 
-            var searchDuplicate = new SearchDuplicate();
+                var searchDuplicate = new SearchDuplicate();
 
-            searchDuplicate.AddDuplicate(ToCalculate);
+                searchDuplicate.AddDuplicate(ToCalculate);
 
-            CommentNumber = searchDuplicate.ToString();
-            
+                CommentNumber = searchDuplicate.ToString();
 
-            Text = newlink.ToString();
-            Label = "";
+
+                Text = newlink.ToString();
+                Label = "";
+            }
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
