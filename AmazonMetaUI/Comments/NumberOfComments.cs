@@ -9,7 +9,7 @@ namespace AmazonMetaUI.Comments
 {
     public static class NumberOfComments
     {
-        public static async Task<int> GetNumberOfComments(string url, IProgress<string> progress)
+        public static async Task<List<int>> GetNumberOfComments(string url, IProgress<string> progress)
         {
             progress.Report("Counting Comments");
 
@@ -48,21 +48,21 @@ namespace AmazonMetaUI.Comments
                 progress.Report("Counting Comments");
             }
 
-            List<char> numberofcommentsList = new List<char>();
+            List<int> numberofcommentsList = new List<int>();
 
-            foreach (char c in temp[0])
+            foreach (string c in temp)
             {
-                if (Char.IsDigit(c))
+                if (int.TryParse(c.Replace(".", ""), out int result))
                 {
-                    numberofcommentsList.Add(c);
+                    numberofcommentsList.Add(result);
                 }
             }
 
-            string tempnumberofcomment = string.Concat(numberofcommentsList);
+            //string tempnumberofcomment = string.Concat(numberofcommentsList);
 
             progress.Report("");
 
-            return Convert.ToInt32(tempnumberofcomment);
+            return numberofcommentsList;
            
         }
     }

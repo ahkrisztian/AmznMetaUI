@@ -93,7 +93,7 @@ namespace AmazonMetaUI
             }
         }
 
-        public int CountedNumbersOfReviews { get; set; }
+        public List<int> CountedNumbersOfReviews { get; set; }
         public MainWindow()
         {
             DataContext = this;
@@ -108,7 +108,7 @@ namespace AmazonMetaUI
                 await Comments(_textBox.Text);
                 _textBox.Text = "";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 Label = $"Error inavlid URL";
@@ -130,7 +130,7 @@ namespace AmazonMetaUI
                 {
                     CountedNumbersOfReviews = await NumberOfComments.GetNumberOfComments(url, progress);
 
-                    CommentNumber3 = $"Number of Reviwes:{Environment.NewLine} {CountedNumbersOfReviews}";
+                    CommentNumber3 = $"Number of Reviwes:{Environment.NewLine} {CountedNumbersOfReviews[0]}";
                 }
                 catch (Exception)
                 {
@@ -143,14 +143,14 @@ namespace AmazonMetaUI
 
             await Task.Run(async () =>
             {
-                var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfReviews);
+                var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfReviews[1]);
 
                 if(pagemodels == null)
                 {
                     Label = "No page link models";
                 }
 
-                models = GetTheUrls.urls(url, progress, CountedNumbersOfReviews, pagemodels);
+                models = GetTheUrls.urls(url, progress, CountedNumbersOfReviews[1], pagemodels);
 
             });
 
@@ -167,7 +167,7 @@ namespace AmazonMetaUI
 
                 List<ReviewModel> CommentsAndTitles = await Htmls.asynchtml(models, progress);
 
-                CommentNumber3 = $"Number of Comments: {CommentsAndTitles.Count} {Environment.NewLine} Number of Comments: {CountedNumbersOfReviews}";
+                CommentNumber3 = $"Number of Reviews: {CountedNumbersOfReviews[0]} {Environment.NewLine} Number of Comments: {CountedNumbersOfReviews[1]}";
 
                 ToCalculate = newlink.AddLinkModel(CommentsAndTitles);
 
