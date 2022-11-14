@@ -106,11 +106,9 @@ namespace AmazonMetaUI
             try
             {
                 await Comments(_textBox.Text);
-                _textBox.Text = "";
             }
             catch (Exception)
             {
-
                 Label = $"Error inavlid URL";
             }
 
@@ -136,61 +134,70 @@ namespace AmazonMetaUI
                 {
 
                     Label = $"Error inavlid URL";
+                   
                 }
             });
 
-            List<IPageLinkModel> models = new List<IPageLinkModel>();
-
-            await Task.Run(async () =>
+            if(CountedNumbersOfReviews != null)
             {
-                var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfReviews[1]);
+                List<IPageLinkModel> models = new List<IPageLinkModel>();
 
-                if(pagemodels == null)
+                await Task.Run(async () =>
                 {
-                    Label = "No page link models";
-                }
+                    var pagemodels = await GetLinkParts.NewPageLinkModel(url, CountedNumbersOfReviews[1]);
 
-                models = GetTheUrls.urls(url, progress, CountedNumbersOfReviews[1], pagemodels);
+                    if (pagemodels == null)
+                    {
+                        Label = "No page link models";
+                    }
 
-            });
+                    models = GetTheUrls.urls(progress, CountedNumbersOfReviews[1], pagemodels);
 
-            List<CommentModel> ToCalculate = new List<CommentModel>();
+                });
 
-            var newlink = new CreateLinkList();
+                List<CommentModel> ToCalculate = new List<CommentModel>();
 
-            await Task.Run(async () =>
-            {
-                if(models == null)
+                var newlink = new CreateLinkList();
+
+                await Task.Run(async () =>
                 {
-                    Label = "No comments found";
+                    if (models == null)
+                    {
+                        Label = "No comments found";
+                    }
+
+                    List<ReviewModel> CommentsAndTitles = await Htmls.asynchtml(models, progress);
+
+                    CommentNumber3 = $"Number of Reviews: {CountedNumbersOfReviews[0]} {Environment.NewLine} Number of Comments: {CountedNumbersOfReviews[1]}";
+
+                    ToCalculate = newlink.AddLinkModel(CommentsAndTitles);
+
+                    Text = newlink.ToString();
+                });
+
+
+                if (ToCalculate.Count > 0)
+                {
+                    CommentNumber2 = new CalculateCommentLength(ToCalculate).ToString();
+
+                    CommentNumber4 = new CalculateTitleLength(ToCalculate).ToString();
+
+                    var searchDuplicate = new SearchDuplicate();
+
+                    searchDuplicate.AddDuplicate(ToCalculate);
+
+                    CommentNumber = searchDuplicate.ToString();
+
+
+                    Text = newlink.ToString();
+                    Label = "";
                 }
-
-                List<ReviewModel> CommentsAndTitles = await Htmls.asynchtml(models, progress);
-
-                CommentNumber3 = $"Number of Reviews: {CountedNumbersOfReviews[0]} {Environment.NewLine} Number of Comments: {CountedNumbersOfReviews[1]}";
-
-                ToCalculate = newlink.AddLinkModel(CommentsAndTitles);
-
-                Text = newlink.ToString();
-            });
-
-
-            if(ToCalculate.Count > 0)
-            {
-                CommentNumber2 = new CalculateCommentLength(ToCalculate).ToString();
-
-                CommentNumber4 = new CalculateTitleLength(ToCalculate).ToString();
-
-                var searchDuplicate = new SearchDuplicate();
-
-                searchDuplicate.AddDuplicate(ToCalculate);
-
-                CommentNumber = searchDuplicate.ToString();
-
-
-                Text = newlink.ToString();
-                Label = "";
             }
+            else
+            {
+                Label = $"Error inavlid URL";
+            }
+            
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

@@ -21,13 +21,19 @@ namespace AmazonMetaUI.Comments
 
 
             //Get a reviews page
+            //
+
             string nexturl = GetLinksFunctions.link(reviewlinkfoot);
 
             var nextUrlAsync = await GetHtml.getHtml(nexturl);
 
             string[] div = nextUrlAsync.Split('\n');
 
-            List<string> temp = new List<string>();
+
+            //Get the number of comments and reviews
+            //
+
+            List<int> temp = new List<int>();
 
             foreach (string s in div)
             {
@@ -40,7 +46,10 @@ namespace AmazonMetaUI.Comments
                     {
                         if (splitted != "")
                         {
-                            temp.Add(splitted);
+                            if (int.TryParse(splitted.Replace(".", ""), out int result))
+                            {
+                                temp.Add(result);
+                            }
                         }
                     }
                 }
@@ -48,21 +57,9 @@ namespace AmazonMetaUI.Comments
                 progress.Report("Counting Comments");
             }
 
-            List<int> numberofcommentsList = new List<int>();
-
-            foreach (string c in temp)
-            {
-                if (int.TryParse(c.Replace(".", ""), out int result))
-                {
-                    numberofcommentsList.Add(result);
-                }
-            }
-
-            //string tempnumberofcomment = string.Concat(numberofcommentsList);
-
             progress.Report("");
 
-            return numberofcommentsList;
+            return temp;
            
         }
     }

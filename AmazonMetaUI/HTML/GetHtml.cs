@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -12,14 +13,21 @@ namespace AmazonMetaUI.HTML
         public async static Task<string> getHtml(string url)
         {
             HttpClient client = new HttpClient();
+
             using (HttpResponseMessage response = await client.GetAsync(url))
             {
-                using (HttpContent content = response.Content)
+                if (response.IsSuccessStatusCode)
                 {
-                    string result = await content.ReadAsStringAsync();
-                    return result;
+                    using (HttpContent content = response.Content)
+                    {
+                        string result = await content.ReadAsStringAsync();
+                        return result;
+                    }
                 }
-            };
+
+                Debug.WriteLine(response.StatusCode.ToString());
+                return response.StatusCode.ToString();            
+           };
         }
     }
 }

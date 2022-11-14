@@ -11,9 +11,11 @@ namespace AmazonMetaUI.Models
 {
     public static class GetTheUrls
     {
-        public static List<IPageLinkModel> urls(string url, IProgress<string> progress, int comments, PageLinkModel pageModel)
+        public static List<IPageLinkModel> urls(IProgress<string> progress, decimal comments, PageLinkModel pageModel)
         {          
-            int Comments = comments / 10 + 2;
+
+
+            decimal Comments = Math.Ceiling(comments/10);
 
             progress.Report("Counting Comments");
 
@@ -21,7 +23,7 @@ namespace AmazonMetaUI.Models
 
             List<IPageLinkModel> models = new List<IPageLinkModel>();
 
-            for (int i = 1; i < Comments; i++)
+            for (int i = 1; i <= Comments; i++)
             {
                 progress.Report($"Creating the links");
 

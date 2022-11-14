@@ -24,6 +24,7 @@ namespace AmazonMetaUI.CreateLinks
                 string date = commentandtitle[i].date;
                 string link = commentandtitle[i].linkToCostumer;
                 string formed = 
+                    $"{i+1}."+
                     $"Stars: {stars} - {date}{Environment.NewLine}" +
                     $"Title: {title}{Environment.NewLine}" +
                     $"Comment:{comment}{Environment.NewLine}" +
